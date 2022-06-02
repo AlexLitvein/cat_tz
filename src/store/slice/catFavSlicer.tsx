@@ -1,5 +1,6 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import { ICat } from '../../models/types';
+import { RootState } from '../catsStore';
 
 /* createEntityAdapter() 
 предоставляет стандартизированный способ хранения данных путем преобразования коллекции в форму { ids: [], entities: {} }. 
@@ -28,7 +29,7 @@ const catsFavAdapter = createEntityAdapter({
 });
 
 export const catsFavSlice = createSlice({
-  name: 'cats',
+  name: 'catsFav',
   // По умолчанию `createEntityAdapter()` возвращает `{ ids: [], entities: {} }`
   // Для отслеживания 'loading' или других ключей, их необходимо инициализировать: getInitialState({ loading: false })
   initialState: catsFavAdapter.getInitialState({
@@ -75,4 +76,10 @@ export const catsFavSlice = createSlice({
 });
 
 // catsReceived,catsLoading,
+
 export const { catAdded, catUpdated } = catsFavSlice.actions;
+
+export const catsSelectors = catsFavAdapter.getSelectors(
+  // (state: RootState) => state.cats
+  (state: RootState) => state.catsFav
+);

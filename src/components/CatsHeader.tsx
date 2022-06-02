@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import { CatsContainer } from './CatsContainer';
+import { CatsFavContainer } from './CatsFavContainer';
 import catsHeaderStyle from './CatsHeader.module.css';
 
 const CatsHeader = () => {
@@ -15,7 +16,7 @@ const CatsHeader = () => {
 
       <Routes>
         <Route path='/' element={<CatsContainer />} />
-        <Route path='/fav-cats' element={<h2>Контакты</h2>} />
+        <Route path='/fav-cats' element={<CatsFavContainer />} />
       </Routes>
     </BrowserRouter>
   );

@@ -13,4 +13,4 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(catsAPI.middleware),
 });
 
-// type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof store.getState>;

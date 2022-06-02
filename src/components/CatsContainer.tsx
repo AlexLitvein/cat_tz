@@ -11,8 +11,12 @@ export const CatsContainer = () => {
   const [limit, setLimit] = useState(10);
   const { data: cats, error, isLoading } = catsAPI.useFetchCatsQuery(limit);
 
+  const onChildClick = (id: number) => {
+    console.log('clickHandler', id);
+  };
+
   const renderList = () => {
-    return cats && cats.map((el) => <CatCard cat={el} key={el.id} />);
+    return cats && cats.map((el) => <CatCard cat={el} onClick={onChildClick} key={el.id} />);
   };
 
   const getErrorStr = (e: FetchBaseQueryError | SerializedError | undefined) => {
