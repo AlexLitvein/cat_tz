@@ -1,7 +1,10 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
+// import { ICat } from '../models/types';
 import { catsAPI } from '../services/CatsService';
+import { catsFavSlice } from './slice/catFavSlicer';
 
 const rootReducer = combineReducers({
+  catsFav: catsFavSlice.reducer,
   [catsAPI.reducerPath]: catsAPI.reducer,
 });
 

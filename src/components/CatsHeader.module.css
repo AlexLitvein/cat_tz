@@ -1,0 +1,8 @@
+.catsHeader{
+    border: 1px solid purple;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100px;
+    
+}
