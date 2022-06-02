@@ -10,7 +10,8 @@ import {
 } from "@reduxjs/toolkit";
 import { ErrorInfo } from "react";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
-import { ICat } from "./types";
+import { ICat } from "../models/types";
+import { catsAPI } from "../services/CatsService";
 
 async function myfetch2(options: any) {
   // let response = await fetch(url, options);
@@ -130,49 +131,19 @@ const catsSlice = createSlice({
 // catsReceived,catsLoading,
 export const { catAdded, catUpdated } = catsSlice.actions;
 
-const rootReducer = combineReducers({ cats: catsSlice.reducer });
+const rootReducer = combineReducers({
+  cats: catsSlice.reducer,
+  [catsAPI.reducerPath]: catsAPI.reducer,
+});
 
 export const store = configureStore({
   reducer: rootReducer,
-  // {
-  //   cats: catsSlice.reducer,
-  // },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(catsAPI.middleware),
 });
-
-// catsSlice.getInitialState().
-// store.
 
 type RootState = ReturnType<typeof store.getState>;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 export const catsSelectors = catsAdapter.getSelectors(
-  // (state: RootState) => state.cats
   (state: RootState) => state.cats
 );
-
-// export type AppStore = ReturnType<typeof store>
-// export type AppDispatch = AppStore['dispatch']
-
-// store.dispatch(bookAdded({ id: "a", title: "First" }));
-// console.log(store.getState().cats);
-// {ids: ["a"], entities: {a: {id: "a", title: "First"}}, loading: 'idle' }
-
-// store.dispatch(bookUpdated({ id: "a", changes: { title: "Second" } }));
-// store.dispatch(catsLoading(store.getState()));
-// console.log(store.getState().cats);
-// {ids: ["a"], entities: {a: {id: "a", title: "Second"}}, loading: 'pending' }
-
-// store.dispatch(
-//   catsReceived([
-//     { id: "b", title: "Book 3" },
-//     { id: "c", title: "Book 2" },
-//   ])
-// );
-
-// console.log(catsSelectors.selectIds(store.getState()));
-// "a" был удален из-за вызова `setAll()`
-// Поскольку книги сортируются по заголовкам, "Book 2" находится перед "Book 3"
-// ["c", "b"]
-
-// console.log(catsSelectors.selectAll(store.getState()));
-// Все сущности в отсортированном порядке
-// [{id: "c", title: "Book 2"}, {id: "b", title: "Book 3"}]

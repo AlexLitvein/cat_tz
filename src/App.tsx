@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo } from "react";
-import "./App.css";
+import React, { useCallback, useEffect, useMemo } from 'react';
+import './App.css';
 import {
   catAdded,
   // catsLoading,
@@ -7,37 +7,37 @@ import {
   catsSelectors,
   fetchCats,
   useAppSelector,
-} from "./catStore";
-import { useDispatch, useSelector } from "react-redux";
-import { CatList } from "./components/Cat";
+} from './store/catStore';
+import { useDispatch, useSelector } from 'react-redux';
+import { CatsContainer } from './components/CatsContainer';
 
 function App() {
-  const dispatch = useDispatch();
-  const { isLoading, error } = useAppSelector((state) => state.cats);
-  const cats = useSelector(catsSelectors.selectAll);
+  // const dispatch = useDispatch();
+  // const { isLoading, error } = useAppSelector((state) => state.cats);
+  // const cats = useSelector(catsSelectors.selectAll);
 
   const btnOnClick = () => {
     // dispatch(catAdded({ id: 1, name: "Cat 1" }));
   };
 
-  useEffect(() => {
-    // https://jsonplaceholder.typicode.com/photos?_limit=5&_page=2
-    dispatch<any>(
-      fetchCats({
-        url: "https://jsonplaceholder.typicode.com/photos111?_limit=5",
-        options: {
-          method: "GET",
-        },
-      })
-    );
-  }, []);
+  // useEffect(() => {
+  //   // https://jsonplaceholder.typicode.com/photos?_limit=5&_page=2
+  //   dispatch<any>(
+  //     fetchCats({
+  //       url: "https://jsonplaceholder.typicode.com/photos111?_limit=5",
+  //       options: {
+  //         method: "GET",
+  //       },
+  //     })
+  //   );
+  // }, []);
 
   return (
-    <div className="App">
+    <div className='App'>
       <button onClick={btnOnClick}>clk</button>
-      {isLoading && <h1>Идет загрузка...</h1>}
-      {error && <h1>{error}</h1>}
-      <CatList cats={cats} />
+      {/* {isLoading && <h1>Идет загрузка...</h1>}
+      {error && <h1>{error}</h1>} */}
+      <CatsContainer />
     </div>
   );
 }
