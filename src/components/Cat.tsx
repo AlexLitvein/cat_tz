@@ -11,6 +11,8 @@ export const CatCard = ({ cat }: { cat: ICat }) => {
 };
 
 export const CatList = ({ cats }: { cats: ICat[] }) => {
+  console.log("render CatList");
+
   const renderList = () => {
     return cats.map((el) => <CatCard cat={el} key={el.id} />);
   };

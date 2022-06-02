@@ -6,7 +6,10 @@ import {
   EntityState,
   createAsyncThunk,
   PayloadAction,
+  combineReducers,
 } from "@reduxjs/toolkit";
+import { ErrorInfo } from "react";
+import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { ICat } from "./types";
 
 async function myfetch2(options: any) {
@@ -35,10 +38,17 @@ export const fetchCats = createAsyncThunk(
       if (response.status === 200) {
         return await response.json();
       } else {
-        return response.status + ":" + response.statusText;
+        throw Error(
+          `${
+            response.status +
+            (response.statusText && ": " + response.statusText)
+          }`
+        );
       }
-    } catch (e) {
-      return thunkAPI.rejectWithValue("Не удалось загрузить");
+    } catch (e: any) {
+      //
+      // return thunkAPI.rejectWithValue("Не удалось загрузить");
+      return thunkAPI.rejectWithValue(e.message);
     }
   }
 );
@@ -75,16 +85,17 @@ const catsSlice = createSlice({
   // По умолчанию `createEntityAdapter()` возвращает `{ ids: [], entities: {} }`
   // Для отслеживания 'loading' или других ключей, их необходимо инициализировать: getInitialState({ loading: false })
   initialState: catsAdapter.getInitialState({
-    loading: false,
+    isLoading: false,
+    error: "",
   }),
   reducers: {
     catAdded: catsAdapter.addOne,
 
-    catsLoading(state, action) {
-      // if (state.loading === "idle") {
-      state.loading = true;
-      // }
-    },
+    // catsLoading(state, action) {
+    //   // if (state.loading === "idle") {
+    //   state.isLoading = true;
+    //   // }
+    // },
 
     // catsReceived(state, action) {
     //   if (state.loading === "pending") {
@@ -102,25 +113,39 @@ const catsSlice = createSlice({
 
       // if (state.loading === "pending") {
       catsAdapter.setAll(state, action.payload);
-      state.loading = false;
+      state.isLoading = false;
       // }
       // state.cats = action.payload;
+    },
+    [fetchCats.pending.type]: (state) => {
+      state.isLoading = true;
+    },
+    [fetchCats.rejected.type]: (state, action: PayloadAction<string>) => {
+      state.isLoading = false;
+      state.error = action.payload;
     },
   },
 });
 
-// catsReceived,
-export const { catAdded, catsLoading, catUpdated } = catsSlice.actions;
+// catsReceived,catsLoading,
+export const { catAdded, catUpdated } = catsSlice.actions;
+
+const rootReducer = combineReducers({ cats: catsSlice.reducer });
 
 export const store = configureStore({
-  reducer: {
-    cats: catsSlice.reducer,
-  },
+  reducer: rootReducer,
+  // {
+  //   cats: catsSlice.reducer,
+  // },
 });
 
-type RootState = ReturnType<typeof store.getState>;
+// catsSlice.getInitialState().
+// store.
 
+type RootState = ReturnType<typeof store.getState>;
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 export const catsSelectors = catsAdapter.getSelectors(
+  // (state: RootState) => state.cats
   (state: RootState) => state.cats
 );
 
