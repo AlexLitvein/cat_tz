@@ -1,13 +1,11 @@
 import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
 import React, { useEffect, useState } from 'react';
-import { ICat } from '../models/types';
 import { catsAPI } from '../services/CatsService';
 import { CatCard } from './Cat';
 import catStyle from './Cat.module.css';
 
 export const CatsContainer = () => {
-  // { cats }: { cats: ICat[] }
   console.log('render CatList');
 
   const [limit, setLimit] = useState(10);
@@ -23,13 +21,9 @@ export const CatsContainer = () => {
       if ('status' in e) {
         // you can access all properties of `FetchBaseQueryError` here
         errMsg = 'error' in e ? e.error : JSON.stringify(e.data);
-
-        // console.log("status' in e");
       } else {
         // you can access all properties of `SerializedError` here
         errMsg = e.message || '';
-
-        // console.log('else');
       }
       return errMsg;
     }

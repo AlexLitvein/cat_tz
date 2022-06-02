@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
-// import {IPost} from "../models/IPost";
 import { ICat } from '../models/types';
 
 export const catsAPI = createApi({
