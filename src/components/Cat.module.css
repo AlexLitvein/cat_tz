@@ -1,5 +1,18 @@
+.сardCont{
+    border: 1px solid red;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
 .catCard{
     border: 1px solid green;
     width: 225px;
     height: 225px;
 }
+
+.catImg {
+    /* object-fit: cover; */
+    width: 100%;
+    height: 100%;
+  }
