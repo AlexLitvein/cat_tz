@@ -4,13 +4,44 @@ import {
   configureStore,
   Store,
   EntityState,
+  createAsyncThunk,
+  PayloadAction,
 } from "@reduxjs/toolkit";
 import { ICat } from "./types";
 
-// interface Book {
-//   id: string;
-//   title: string;
-// }
+async function myfetch2(options: any) {
+  // let response = await fetch(url, options);
+  // if (response.status === 200) {
+  //   return await response.json();
+  // } else {
+  //   return response.status + ":" + response.statusText;
+  // }
+  // console.log("myfetch2 body", options);
+
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res("return from promise");
+    }, 1000);
+  });
+}
+
+export const fetchCats = createAsyncThunk(
+  "cats/fetchCats",
+  // myfetch2 // можно так
+
+  async (params: any, thunkAPI) => {
+    try {
+      const response = await await fetch(params.url, params.options);
+      if (response.status === 200) {
+        return await response.json();
+      } else {
+        return response.status + ":" + response.statusText;
+      }
+    } catch (e) {
+      return thunkAPI.rejectWithValue("Не удалось загрузить");
+    }
+  }
+);
 
 /* createEntityAdapter() 
 предоставляет стандартизированный способ хранения данных путем преобразования коллекции в форму { ids: [], entities: {} }. 
@@ -42,37 +73,44 @@ const catsAdapter = createEntityAdapter({
 const catsSlice = createSlice({
   name: "cats",
   // По умолчанию `createEntityAdapter()` возвращает `{ ids: [], entities: {} }`
-  // Для отслеживания 'loading' или других ключей, их необходимо инициализировать:
-  // `getInitialState({ loading: false })`
+  // Для отслеживания 'loading' или других ключей, их необходимо инициализировать: getInitialState({ loading: false })
   initialState: catsAdapter.getInitialState({
-    loading: "idle",
+    loading: false,
   }),
   reducers: {
     catAdded: catsAdapter.addOne,
+
     catsLoading(state, action) {
-      if (state.loading === "idle") {
-        state.loading = "pending";
-      }
+      // if (state.loading === "idle") {
+      state.loading = true;
+      // }
     },
-    catsReceived(state, action) {
-      if (state.loading === "pending") {
-        catsAdapter.setAll(state, action.payload);
-        state.loading = "idle";
-      }
-    },
+
+    // catsReceived(state, action) {
+    //   if (state.loading === "pending") {
+    //     catsAdapter.setAll(state, action.payload);
+    //     state.loading = "idle";
+    //   }
+    // },
     catUpdated: catsAdapter.updateOne,
+  },
+
+  extraReducers: {
+    [fetchCats.fulfilled.type]: (state, action) => {
+      // : PayloadAction<string>
+      // console.log("fetchCats.fulfilled.type: ", action.payload);
+
+      // if (state.loading === "pending") {
+      catsAdapter.setAll(state, action.payload);
+      state.loading = false;
+      // }
+      // state.cats = action.payload;
+    },
   },
 });
 
-// export const {
-//   catAdded: bookAdded,
-//   catsLoading,
-//   catsReceived,
-//   catUpdated: bookUpdated,
-// } = catsSlice.actions;
-
-export const { catAdded, catsLoading, catsReceived, catUpdated } =
-  catsSlice.actions;
+// catsReceived,
+export const { catAdded, catsLoading, catUpdated } = catsSlice.actions;
 
 export const store = configureStore({
   reducer: {
@@ -80,15 +118,14 @@ export const store = configureStore({
   },
 });
 
-type MyState = ReturnType<typeof store.getState>;
-
-// Проверяем начальное состояние
-// console.log(store.getState().cats);
-// {ids: [], entities: {}, loading: 'idle' }
+type RootState = ReturnType<typeof store.getState>;
 
 export const catsSelectors = catsAdapter.getSelectors(
-  (state: MyState) => state.cats
+  (state: RootState) => state.cats
 );
+
+// export type AppStore = ReturnType<typeof store>
+// export type AppDispatch = AppStore['dispatch']
 
 // store.dispatch(bookAdded({ id: "a", title: "First" }));
 // console.log(store.getState().cats);

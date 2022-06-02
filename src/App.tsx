@@ -1,7 +1,12 @@
 import React, { useEffect } from "react";
-import logo from "./logo.svg";
 import "./App.css";
-import { catAdded, catsLoading, catsReceived, catsSelectors } from "./catStore";
+import {
+  catAdded,
+  catsLoading,
+  // catsReceived,
+  catsSelectors,
+  fetchCats,
+} from "./catStore";
 import { useDispatch, useSelector } from "react-redux";
 import { CatList } from "./components/Cat";
 
@@ -9,35 +14,34 @@ function App() {
   const dispatch = useDispatch();
   const cats = useSelector(catsSelectors.selectAll);
   const btnOnClick = () => {
-    dispatch(catAdded({ id: 1, name: "Cat 1" }));
+    // dispatch(catAdded({ id: 1, name: "Cat 1" }));
   };
 
   useEffect(() => {
     dispatch(catsLoading(null));
-    dispatch(
-      catsReceived([
-        { id: 3, name: "Cat 3" },
-        { id: 2, name: "Cat 2" },
-      ])
+
+    // https://jsonplaceholder.typicode.com/photos?_limit=5&_page=2
+    // [
+    //   {
+    //     "albumId": 1,
+    //     "id": 1,
+    //     "title": "accusamus beatae ad facilis cum similique qui sunt",
+    //     "url": "https://via.placeholder.com/600/92c952",
+    //     "thumbnailUrl": "https://via.placeholder.com/150/92c952"
+    //   },
+    // ]
+    dispatch<any>(
+      fetchCats({
+        url: "https://jsonplaceholder.typicode.com/photos?_limit=5",
+        options: {
+          method: "GET",
+        },
+      })
     );
   }, []);
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
       <button onClick={btnOnClick}>clk</button>
       <CatList cats={cats} />
     </div>
