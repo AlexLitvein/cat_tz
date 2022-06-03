@@ -13,3 +13,8 @@ export interface ICat {
   url: string;
   thumbnailUrl: string;
 }
+
+export interface IFetchCatsParams {
+  limit: number;
+  page: number;
+}

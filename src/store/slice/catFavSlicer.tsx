@@ -14,6 +14,7 @@ import { RootState } from '../catsStore';
 addOne - принимает единичную сущность и добавляет ее
 addMany - принимает массив сущностей или объект определенной формы и добавляет их
 setAll - принимает массив сущностей или объект определенной формы и заменяет контент существующих сущностей значениями из массива
+setMany - принимает массив сущностей или объект в форме Record<EntityId, T> и добавляет или заменяет их.
 removeOne - принимает единичное значение id и удаляет соответствуюую сущность, если она имеется
 removeMany - принимает массив значений id и удаляет соответствующие сущности
 updateOne - принимает "объект обновления", содержащий id сущности и объект с одним и более новыми значениями полей в поле changes, и выполняет поверхностное обновление соответствующей сущности
@@ -21,6 +22,14 @@ updateMany - принимает массив объектов обновлени
 upsertOne - принимает единичную сущность. Если сущность с указанным id существует, выполняется ее поверхностное обновление и объединение полей. Значения совпадающих полей перезаписываются. Если сущность с указанным id отсутствует, она добавляется
 upsertMany - принимает массив сущностей или объект определенной формы и выполняет upsertOne для каждой сущности
  */
+
+const catsAdapter = createEntityAdapter({
+  // Сортируем массив с идентификаторами по заголовкам книг
+  // Указывая тип параметров, ts опредедяет тип сущности в стате
+  // sortComparer: (a: ICat, b: ICat) => a.id.localeCompare(b.id), // !!! последующее изменение ф-ии сравнения не применяется
+  sortComparer: (a: ICat, b: ICat) => (a.id < b.id ? -1 : 1),
+});
+
 const catsFavAdapter = createEntityAdapter({
   // Сортируем массив с идентификаторами по заголовкам книг
   // Указывая тип параметров, ts опредедяет тип сущности в стате
@@ -38,6 +47,8 @@ export const catsFavSlice = createSlice({
   }),
   reducers: {
     catAdded: catsFavAdapter.addOne,
+
+    catRemoveOne: catsFavAdapter.removeOne,
 
     // catsLoading(state, action) {
     //   // if (state.loading === "idle") {
@@ -75,11 +86,31 @@ export const catsFavSlice = createSlice({
   // },
 });
 
+export const catsSlice = createSlice({
+  name: 'cats',
+  // По умолчанию `createEntityAdapter()` возвращает `{ ids: [], entities: {} }`
+  // Для отслеживания 'loading' или других ключей, их необходимо инициализировать: getInitialState({ loading: false })
+  initialState: catsAdapter.getInitialState({
+    currPage: 1,
+  }),
+  reducers: {
+    catAddMany: catsAdapter.addMany,
+    setCurrPage(state, action) {
+      state.currPage = action.payload;
+    },
+    // catUpdated: catsFavAdapter.updateOne,
+  },
+});
+
 // catsReceived,catsLoading,
 
-export const { catAdded, catUpdated } = catsFavSlice.actions;
-
-export const catsSelectors = catsFavAdapter.getSelectors(
+export const { catAdded, catUpdated, catRemoveOne } = catsFavSlice.actions;
+export const { catAddMany, setCurrPage } = catsSlice.actions;
+export const catsFavSelectors = catsFavAdapter.getSelectors(
   // (state: RootState) => state.cats
   (state: RootState) => state.catsFav
+);
+export const catsSelectors = catsAdapter.getSelectors(
+  // (state: RootState) => state.cats
+  (state: RootState) => state.cats
 );
