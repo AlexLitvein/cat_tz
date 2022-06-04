@@ -1,5 +1,5 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import { ICat } from '../../models/types';
+import { ICatDTO } from '../../models/types'; //  ICat2,
 import { RootState } from '../catsStore';
 
 /* createEntityAdapter() 
@@ -27,14 +27,14 @@ const catsAdapter = createEntityAdapter({
   // Сортируем массив с идентификаторами по заголовкам книг
   // Указывая тип параметров, ts опредедяет тип сущности в стате
   // sortComparer: (a: ICat, b: ICat) => a.id.localeCompare(b.id), // !!! последующее изменение ф-ии сравнения не применяется
-  sortComparer: (a: ICat, b: ICat) => (a.id < b.id ? -1 : 1),
+  sortComparer: (a: ICatDTO, b: ICatDTO) => (a.id < b.id ? -1 : 1),
 });
 
 const catsFavAdapter = createEntityAdapter({
   // Сортируем массив с идентификаторами по заголовкам книг
   // Указывая тип параметров, ts опредедяет тип сущности в стате
   // sortComparer: (a: ICat, b: ICat) => a.id.localeCompare(b.id), // !!! последующее изменение ф-ии сравнения не применяется
-  sortComparer: (a: ICat, b: ICat) => (a.id < b.id ? -1 : 1),
+  sortComparer: (a: ICatDTO, b: ICatDTO) => (a.id < b.id ? -1 : 1),
 });
 
 export const catsFavSlice = createSlice({

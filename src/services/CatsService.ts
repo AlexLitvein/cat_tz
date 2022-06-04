@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
-import { ICat, IFetchCatsParams } from '../models/types';
+import { ICatDTO, IFetchCatsParams } from '../models/types';
 
 export const catsAPI = createApi({
   reducerPath: 'catsAPI',
@@ -19,7 +19,7 @@ export const catsAPI = createApi({
     //   providesTags: (result) => ['Cats'],
     // }),
 
-    fetchCats: build.query<ICat[], IFetchCatsParams>({
+    fetchCats: build.query<ICatDTO[], IFetchCatsParams>({
       query: (params) => ({
         url: `/photos`,
         params: {

@@ -6,13 +6,19 @@
 //     "thumbnailUrl": "https://via.placeholder.com/150/92c952"
 //   },
 
-export interface ICat {
+export interface ICatDTO {
   albumId: number;
   id: number;
   title: string;
   url: string;
   thumbnailUrl: string;
+  isChecked: boolean;
 }
+
+// export interface ICat2 {
+//   catDTO: ICatDTO;
+//   isChecked: boolean;
+// }
 
 export interface IFetchCatsParams {
   limit: number;

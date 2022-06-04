@@ -2,7 +2,7 @@ import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
 import React, { MouseEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ICat } from '../models/types';
+import { ICatDTO } from '../models/types'; //ICat2,
 import { catsAPI } from '../services/CatsService';
 import { useAppSelector } from '../store/catsStore';
 import { catAdded, catAddMany, catsSelectors } from '../store/slice/catFavSlicer';
@@ -10,20 +10,23 @@ import { CatCard } from './Cat';
 import catStyle from './Cat.module.css';
 
 export const CatsContainer = () => {
-  let timer: NodeJS.Timeout;
+  // let timer: NodeJS.Timeout;
   const dispatch = useDispatch();
-  const [limit, setLimit] = useState(15);
+  const [limit, setLimit] = useState(5);
   // const [page, setPage] = useState(1);
   const [page, setPage] = useState(1); //useAppSelector((state) => state.cats.currPage)
   // const page = useAppSelector((state) => state.cats.currPage);
   const { data: catsFetched = [], error, isLoading, isFetching } = catsAPI.useFetchCatsQuery({ limit, page });
+  // let { catsFetched, error=null, isLoading = false, isFetching = false } = {};
   const cats = useSelector(catsSelectors.selectAll);
 
   // const onChildClick = (idx: number) => {
   //   dispatch(catAdded(cats[idx]));
   // };
 
-  const onChildClick = (cat: ICat) => {
+  const onChildClick = (cat: ICatDTO) => {
+    // console.log(`cat.isChecked: ${cat.isChecked}`);
+    // cat.isChecked = true;
     dispatch(catAdded(cat));
   };
 
@@ -33,9 +36,9 @@ export const CatsContainer = () => {
 
   useEffect(() => {
     dispatch(catAddMany(catsFetched));
-    return () => {
-      clearTimeout(timer);
-    };
+    // return () => {
+    //   clearTimeout(timer);
+    // };
   }, [catsFetched]);
 
   const scrollHandler = () => {
@@ -53,6 +56,9 @@ export const CatsContainer = () => {
   };
 
   useEffect(() => {
+    // ({ data:catsFetched, error, isLoading, isFetching } = catsAPI.useFetchCatsQuery({ limit, page }));
+
+    console.log('mount');
     document.addEventListener('scroll', scrollHandler());
     return () => {
       document.removeEventListener('scroll', scrollHandler());
@@ -60,7 +66,7 @@ export const CatsContainer = () => {
   }, []);
 
   const renderList = () => {
-    return cats && cats.map((el) => <CatCard cat={el} onClick={onChildClick} key={el.id} />);
+    return cats && cats.map((cat) => <CatCard cat={cat} onClick={onChildClick} key={cat.id} />);
     // return cats && cats.map((el, i) => <CatCard idx={i} cat={el} onClick={onChildClick} key={el.id} />);
   };
 

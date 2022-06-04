@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ICat } from '../models/types';
+import { ICatDTO } from '../models/types'; //ICat2,
 import { catRemoveOne, catsFavSelectors } from '../store/slice/catFavSlicer';
 import { CatCard } from './Cat';
 import catStyle from './Cat.module.css';
@@ -14,7 +14,7 @@ export const CatsFavContainer = () => {
   // const onChildClick = (idx: number) => {
   //   dispatch(catRemoveOne(idx));
   // };
-  const onChildClick = (cat: ICat) => {
+  const onChildClick = (cat: ICatDTO) => {
     dispatch(catRemoveOne(cat.id));
   };
 
