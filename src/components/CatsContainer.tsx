@@ -1,45 +1,63 @@
 import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
-import React, { useEffect, useState } from 'react';
+import React, { MouseEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ICat } from '../models/types';
 import { catsAPI } from '../services/CatsService';
 import { useAppSelector } from '../store/catsStore';
-import { catAdded, catAddMany, catsSelectors, setCurrPage } from '../store/slice/catFavSlicer';
+import { catAdded, catAddMany, catsSelectors } from '../store/slice/catFavSlicer';
 import { CatCard } from './Cat';
 import catStyle from './Cat.module.css';
 
 export const CatsContainer = () => {
+  let timer: NodeJS.Timeout;
   const dispatch = useDispatch();
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(15);
   // const [page, setPage] = useState(1);
-  const page = useAppSelector((state) => state.cats.currPage);
-  const { data: catsFetched = [], error, isLoading } = catsAPI.useFetchCatsQuery({ limit, page });
+  const [page, setPage] = useState(1); //useAppSelector((state) => state.cats.currPage)
+  // const page = useAppSelector((state) => state.cats.currPage);
+  const { data: catsFetched = [], error, isLoading, isFetching } = catsAPI.useFetchCatsQuery({ limit, page });
   const cats = useSelector(catsSelectors.selectAll);
 
-  const onChildClick = (idx: number) => {
-    dispatch(catAdded(cats[idx]));
-    // cats?.splice(idx, 1);
+  // const onChildClick = (idx: number) => {
+  //   dispatch(catAdded(cats[idx]));
+  // };
+
+  const onChildClick = (cat: ICat) => {
+    dispatch(catAdded(cat));
   };
 
   // const changePage = (n = 0) => {
-  //   setPage((prev) => {
-  //     let p = prev + n !== 0 ? prev + n : prev;
-  //     // let p = Math.max(prev, prev + n);
-  //     console.log(`p: ${p}`);
-  //     return p;
-  //   });
+  //   setPage((prev) => (prev + n !== 0 ? prev + n : prev));
   // };
-
-  const changePage = (n = 0) => {
-    let p = page + n !== 0 ? page + n : page;
-    dispatch(setCurrPage(p));
-    console.log(page);
-  };
 
   useEffect(() => {
     dispatch(catAddMany(catsFetched));
+    return () => {
+      clearTimeout(timer);
+    };
   }, [catsFetched]);
+
+  const scrollHandler = () => {
+    let isStart = false;
+    return (e: any) => {
+      let sz = e.target.documentElement.scrollHeight - (e.target.documentElement.scrollTop + window.innerHeight);
+      if (!isStart && sz <= 100) {
+        isStart = true;
+        setPage((prev) => prev + 1);
+      }
+      if (sz > 100) {
+        isStart = false;
+      }
+    };
+  };
+
+  useEffect(() => {
+    document.addEventListener('scroll', scrollHandler());
+    return () => {
+      document.removeEventListener('scroll', scrollHandler());
+    };
+  }, []);
 
   const renderList = () => {
     return cats && cats.map((el) => <CatCard cat={el} onClick={onChildClick} key={el.id} />);
@@ -64,15 +82,21 @@ export const CatsContainer = () => {
   // isLoading && console.log('isLoading');
 
   return (
-    <div className={catStyle.сardCont}>
-      {isLoading && <h1>Идет загрузка...</h1>}
+    <>
+      <div className={catStyle.сardCont}>
+        {/* {isLoading && <h1>Идет загрузка...</h1>} */}
 
-      {/* {error && <h1>Ошибка при загрузке</h1>} */}
-      {error && <h1>{getErrorStr(error)}</h1>}
-      <button onClick={(e) => changePage(-1)}>prev</button>
-      <button onClick={(e) => changePage(1)}>next</button>
-      {renderList()}
-    </div>
+        {/* <button onClick={(e) => changePage(-1)}>prev</button>
+      <button onClick={(e) => changePage(1)}>next</button> */}
+        {renderList()}
+      </div>
+      {(isFetching || error) && (
+        <div className={catStyle.catLoadCont}>
+          {isFetching && <h1>Закружаем котиков...</h1>}
+          {error && <h1>{getErrorStr(error)}</h1>}
+        </div>
+      )}
+    </>
   );
 };
 

@@ -42,8 +42,8 @@ export const catsFavSlice = createSlice({
   // По умолчанию `createEntityAdapter()` возвращает `{ ids: [], entities: {} }`
   // Для отслеживания 'loading' или других ключей, их необходимо инициализировать: getInitialState({ loading: false })
   initialState: catsFavAdapter.getInitialState({
-    isLoading: false,
-    error: '',
+    // isLoading: false,
+    // error: '',
   }),
   reducers: {
     catAdded: catsFavAdapter.addOne,
@@ -91,13 +91,16 @@ export const catsSlice = createSlice({
   // По умолчанию `createEntityAdapter()` возвращает `{ ids: [], entities: {} }`
   // Для отслеживания 'loading' или других ключей, их необходимо инициализировать: getInitialState({ loading: false })
   initialState: catsAdapter.getInitialState({
+    isLoading: false,
+    error: '',
     currPage: 1,
   }),
   reducers: {
     catAddMany: catsAdapter.addMany,
-    setCurrPage(state, action) {
-      state.currPage = action.payload;
-    },
+
+    // setCurrPage(state, action) {
+    //   state.currPage = action.payload;
+    // },
     // catUpdated: catsFavAdapter.updateOne,
   },
 });
@@ -105,7 +108,7 @@ export const catsSlice = createSlice({
 // catsReceived,catsLoading,
 
 export const { catAdded, catUpdated, catRemoveOne } = catsFavSlice.actions;
-export const { catAddMany, setCurrPage } = catsSlice.actions;
+export const { catAddMany } = catsSlice.actions;
 export const catsFavSelectors = catsFavAdapter.getSelectors(
   // (state: RootState) => state.cats
   (state: RootState) => state.catsFav
