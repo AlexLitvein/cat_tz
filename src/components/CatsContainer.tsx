@@ -1,93 +1,95 @@
 import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { ICat2 } from '../models/types';
 import { catsAPI } from '../services/CatsService';
+import {
+  catAdd,
+  catAddMany,
+  catFavAdd,
+  catFavRemoveOne,
+  catsSelectors,
+  catUpdate,
+  fetchCats,
+} from '../store/slice/catFavSlicer';
 import { CatCard } from './Cat';
 import catStyle from './Cat.module.css';
 
 export const CatsContainer = () => {
-  console.log('render CatList');
+  const dispatch = useDispatch();
+  const [page, setPage] = useState(1);
+  const {
+    data: catsFetched = [],
+    error = '',
+    isLoading = false,
+    isFetching = false,
+  } = catsAPI.useFetchCatsQuery({ limit: 7, page });
 
-  const [limit, setLimit] = useState(10);
-  const { data: cats, error, isLoading } = catsAPI.useFetchCatsQuery(limit);
+  const cats = useSelector(catsSelectors.selectAll);
+
+  const onChildClick = (cat: ICat2) => {
+    const updArg = { id: cat.id, changes: { isChecked: false } };
+    if (cat.isChecked) {
+      dispatch(catFavRemoveOne(cat.id));
+    } else {
+      updArg.changes.isChecked = true;
+      dispatch(catFavAdd({ ...cat, isChecked: true }));
+    }
+    dispatch(catUpdate(updArg));
+  };
+
+  useEffect(() => {
+    dispatch(catAddMany(catsFetched.map((catDTO) => ({ ...catDTO, isChecked: false }))));
+  }, [catsFetched]);
+
+  const scrollHandler = () => {
+    let isStart = false;
+    return (e: any) => {
+      let sz = e.target.documentElement.scrollHeight - (e.target.documentElement.scrollTop + window.innerHeight);
+      if (!isStart && sz <= 100) {
+        isStart = true;
+        setPage((prev) => prev + 1);
+      }
+      if (sz > 100) {
+        isStart = false;
+      }
+    };
+  };
+
+  useEffect(() => {
+    document.addEventListener('scroll', scrollHandler());
+    return () => {
+      document.removeEventListener('scroll', scrollHandler());
+    };
+  }, []);
 
   const renderList = () => {
-    return cats && cats.map((el) => <CatCard cat={el} key={el.id} />);
+    return cats && cats.map((cat) => <CatCard cat={cat} onClick={onChildClick} key={cat.id} />);
   };
 
   const getErrorStr = (e: FetchBaseQueryError | SerializedError | undefined) => {
     let errMsg = '';
     if (e) {
       if ('status' in e) {
-        // you can access all properties of `FetchBaseQueryError` here
         errMsg = 'error' in e ? e.error : JSON.stringify(e.data);
       } else {
-        // you can access all properties of `SerializedError` here
         errMsg = e.message || '';
       }
       return errMsg;
     }
   };
 
+  // console.log('render CatList');
   return (
-    <div className={catStyle.сardCont}>
-      {isLoading && <h1>Идет загрузка...</h1>}
-      {/* {error && <h1>Ошибка при загрузке</h1>} */}
-      {error && <h1>{getErrorStr(error)}</h1>}
-      {renderList()}
-    </div>
+    <>
+      <div className={catStyle.сardCont}>{renderList()}</div>
+      {(isFetching || error) && (
+        <div className={catStyle.catLoadCont}>
+          {isFetching && <h1>... загружаем еще котиков ...</h1>}
+          {error && <h1>{'Не удалось загрузить котиков :('}</h1>}
+        </div>
+      )}
+    </>
   );
 };
-
-// const PostContainer = () => {
-//   const [limit, setLimit] = useState(100);
-//   const {
-//     data: posts,
-//     error,
-//     isLoading,
-//     refetch,
-//   } = postAPI.useFetchAllPostsQuery(limit);
-//   const [createPost, {}] = postAPI.useCreatePostMutation();
-//   const [updatePost, {}] = postAPI.useUpdatePostMutation();
-//   const [deletePost, {}] = postAPI.useDeletePostMutation();
-
-//   useEffect(() => {
-//     // setTimeout(() => {
-//     //     setLimit(3)
-//     // }, 2000)
-//   }, []);
-
-//   const handleCreate = async () => {
-//     const title = prompt();
-//     await createPost({ title, body: title } as IPost);
-//   };
-
-//   const handleRemove = (post: IPost) => {
-//     deletePost(post);
-//   };
-
-//   const handleUpdate = (post: IPost) => {
-//     updatePost(post);
-//   };
-
-//   return (
-//     <div>
-//       <div className="post__list">
-//         <button onClick={handleCreate}>Add new post</button>
-//         {isLoading && <h1>Идет загрузка...</h1>}
-//         {error && <h1>Произошла ошибка при загрузке</h1>}
-//         {posts &&
-//           posts.map((post) => (
-//             <PostItem
-//               remove={handleRemove}
-//               update={handleUpdate}
-//               key={post.id}
-//               post={post}
-//             />
-//           ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default PostContainer;

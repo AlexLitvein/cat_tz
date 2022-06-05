@@ -1,18 +1,59 @@
+:root {
+    --img-sz: 225px;
+    --card-sz: 272px;
+  }
+
 .сardCont{
-    border: 1px solid red;
     display: flex;
-    justify-content: space-between;
     flex-wrap: wrap;
+    padding-top: 28px;
+    padding-bottom: 28px;
+    margin-left: calc((var(--card-sz) - var(--img-sz))/-2);
+    composes: gHorzPadding from "../App.css";
 }
 
 .catCard{
-    border: 1px solid green;
-    width: 225px;
-    height: 225px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: var(--card-sz);
+    height: var(--card-sz);
 }
 
+.catCard:hover .heartHidden  {
+    display: block;
+  }
+
 .catImg {
-    /* object-fit: cover; */
-    width: 100%;
-    height: 100%;
+    width: var(--img-sz);
+    height: var(--img-sz);
+  }
+
+  .catCard:hover .catImg  {
+    width: 256px;
+    height: 256px;
+    position: absolute;
+    box-shadow: 0px 6px 5px rgba(0, 0, 0, 0.24), 0px 9px 18px rgba(0, 0, 0, 0.18);
+  }
+
+  .catLoadCont {
+    display: flex;
+    justify-content: center;
+  }
+
+.heartHidden {    
+    position: absolute;
+    display: none;
+     margin-left: 160px;
+    margin-top: 160px;
+}
+
+.heart {
+    composes: heartHidden;
+    display: block;
+}
+
+  .heartHidden:hover {
+    background-image: url(../media/heart-filled.svg);
   }
