@@ -1,8 +1,31 @@
+:root {
+    --header-h: 64px;
+    --butt-active-bg: #1E88E5;
+  }
+
 .catsHeader{
-    border: 1px solid purple;
     display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height: 100px;
-    
+    height: var(--header-h);
+    background-color: #2196F3;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.24);
+    composes: gHorzPadding from "../App.css";
 }
+
+.butt{
+    height: 100%;
+    width: 120px;
+    line-height: var(--header-h);
+    text-decoration: none;
+    text-align: center;
+    color: #fff;
+    padding: 0 20px;
+}
+
+.buttActive{
+    background-color: var(--butt-active-bg);
+}
+
+.butt:hover{
+    background-color: #1E88E5; 
+}
+

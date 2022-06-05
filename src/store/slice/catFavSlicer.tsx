@@ -32,9 +32,6 @@ const catsAdapter = createEntityAdapter({
 });
 
 const catsFavAdapter = createEntityAdapter({
-  // Сортируем массив с идентификаторами по заголовкам книг
-  // Указывая тип параметров, ts опредедяет тип сущности в стате
-  // sortComparer: (a: ICat, b: ICat) => a.id.localeCompare(b.id), // !!! последующее изменение ф-ии сравнения не применяется
   sortComparer: (a: ICat2, b: ICat2) => (a.id < b.id ? -1 : 1),
 });
 
@@ -42,10 +39,7 @@ export const catsFavSlice = createSlice({
   name: 'catsFav',
   // По умолчанию `createEntityAdapter()` возвращает `{ ids: [], entities: {} }`
   // Для отслеживания 'loading' или других ключей, их необходимо инициализировать: getInitialState({ loading: false })
-  initialState: catsFavAdapter.getInitialState({
-    // isLoading: false,
-    // error: '',
-  }),
+  initialState: catsFavAdapter.getInitialState({}),
   reducers: {
     catAdd: catsFavAdapter.addOne,
 
@@ -80,9 +74,9 @@ export const catsSlice = createSlice({
   // По умолчанию `createEntityAdapter()` возвращает `{ ids: [], entities: {} }`
   // Для отслеживания 'loading' или других ключей, их необходимо инициализировать: getInitialState({ loading: false })
   initialState: catsAdapter.getInitialState({
-    isLoading: false,
-    error: '',
-    currPage: 1,
+    isLoading: false, // ????
+    error: '', // ????
+    currPage: 1, // ????
   }),
   reducers: {
     catAddMany: catsAdapter.addMany,
@@ -119,11 +113,5 @@ export const catsSlice = createSlice({
 
 export const { catAdd: catFavAdd, catRemoveOne: catFavRemoveOne } = catsFavSlice.actions;
 export const { catAddMany, catUpdate, catRemoveOne, catAdd } = catsSlice.actions;
-export const catsFavSelectors = catsFavAdapter.getSelectors(
-  // (state: RootState) => state.cats
-  (state: RootState) => state.catsFav
-);
-export const catsSelectors = catsAdapter.getSelectors(
-  // (state: RootState) => state.cats
-  (state: RootState) => state.cats
-);
+export const catsFavSelectors = catsFavAdapter.getSelectors((state: RootState) => state.catsFav);
+export const catsSelectors = catsAdapter.getSelectors((state: RootState) => state.cats);

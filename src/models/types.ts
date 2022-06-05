@@ -1,4 +1,4 @@
-//   {
+//   { json placeholder photo
 //     "albumId": 1,
 //     "id": 1,
 //     "title": "accusamus beatae ad facilis cum similique qui sunt",
@@ -15,11 +15,15 @@ export interface ICatDTO {
 }
 
 export interface ICat2 extends ICatDTO {
-  // catDTO: ICat2;
   isChecked: boolean;
 }
 
 export interface IFetchCatsParams {
   limit: number;
   page: number;
+}
+
+export interface CatCardProp {
+  cat: ICat2;
+  onClick?: (cat: ICat2) => void;
 }

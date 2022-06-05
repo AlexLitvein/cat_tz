@@ -8,17 +8,6 @@ export const catsAPI = createApi({
   }),
   tagTypes: ['Cats'],
   endpoints: (build) => ({
-    // fetchCats: build.query<ICat[], number>({
-    //   query: (limit: number = 5, page: number = 1) => ({
-    //     url: `/photos`,
-    //     params: {
-    //       _limit: limit,
-    //       _page: page,
-    //     },
-    //   }),
-    //   providesTags: (result) => ['Cats'],
-    // }),
-
     fetchCats: build.query<ICatDTO[], IFetchCatsParams>({
       query: (params) => ({
         url: `/photos`,
