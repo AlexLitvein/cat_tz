@@ -2,10 +2,10 @@ import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
 import React, { MouseEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ICatDTO } from '../models/types'; //ICat2,
+import { ICat2 } from '../models/types'; //ICat2,
 import { catsAPI } from '../services/CatsService';
 import { useAppSelector } from '../store/catsStore';
-import { catAdded, catAddMany, catsSelectors } from '../store/slice/catFavSlicer';
+import { catAdd, catAddMany, catFavAdd, catsSelectors, catUpdate, fetchCats } from '../store/slice/catFavSlicer';
 import { CatCard } from './Cat';
 import catStyle from './Cat.module.css';
 
@@ -16,7 +16,12 @@ export const CatsContainer = () => {
   // const [page, setPage] = useState(1);
   const [page, setPage] = useState(1); //useAppSelector((state) => state.cats.currPage)
   // const page = useAppSelector((state) => state.cats.currPage);
-  const { data: catsFetched = [], error, isLoading, isFetching } = catsAPI.useFetchCatsQuery({ limit, page });
+  const {
+    data: catsFetched = [],
+    error = '',
+    isLoading = false,
+    isFetching = false,
+  } = catsAPI.useFetchCatsQuery({ limit, page });
   // let { catsFetched, error=null, isLoading = false, isFetching = false } = {};
   const cats = useSelector(catsSelectors.selectAll);
 
@@ -24,10 +29,10 @@ export const CatsContainer = () => {
   //   dispatch(catAdded(cats[idx]));
   // };
 
-  const onChildClick = (cat: ICatDTO) => {
-    // console.log(`cat.isChecked: ${cat.isChecked}`);
-    // cat.isChecked = true;
-    dispatch(catAdded(cat));
+  const onChildClick = (cat: ICat2) => {
+    dispatch(catUpdate({ id: cat.id, changes: { isChecked: true } }));
+    // dispatch(catFavAdd(cat));
+    dispatch(catFavAdd({ ...cat, isChecked: true }));
   };
 
   // const changePage = (n = 0) => {
@@ -35,7 +40,7 @@ export const CatsContainer = () => {
   // };
 
   useEffect(() => {
-    dispatch(catAddMany(catsFetched));
+    dispatch(catAddMany(catsFetched.map((catDTO) => ({ ...catDTO, isChecked: false }))));
     // return () => {
     //   clearTimeout(timer);
     // };
@@ -57,6 +62,8 @@ export const CatsContainer = () => {
 
   useEffect(() => {
     // ({ data:catsFetched, error, isLoading, isFetching } = catsAPI.useFetchCatsQuery({ limit, page }));
+
+    // dispatch<any>(fetchCats({ limit, page }));
 
     console.log('mount');
     document.addEventListener('scroll', scrollHandler());

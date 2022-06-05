@@ -12,13 +12,12 @@ export interface ICatDTO {
   title: string;
   url: string;
   thumbnailUrl: string;
-  isChecked: boolean;
 }
 
-// export interface ICat2 {
-//   catDTO: ICatDTO;
-//   isChecked: boolean;
-// }
+export interface ICat2 extends ICatDTO {
+  // catDTO: ICat2;
+  isChecked: boolean;
+}
 
 export interface IFetchCatsParams {
   limit: number;

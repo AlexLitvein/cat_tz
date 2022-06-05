@@ -1,5 +1,6 @@
-import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import { ICatDTO } from '../../models/types'; //  ICat2,
+import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
+import { ICat2 } from '../../models/types'; //  ICat2,
+import { catsAPI } from '../../services/CatsService';
 import { RootState } from '../catsStore';
 
 /* createEntityAdapter() 
@@ -27,14 +28,14 @@ const catsAdapter = createEntityAdapter({
   // Сортируем массив с идентификаторами по заголовкам книг
   // Указывая тип параметров, ts опредедяет тип сущности в стате
   // sortComparer: (a: ICat, b: ICat) => a.id.localeCompare(b.id), // !!! последующее изменение ф-ии сравнения не применяется
-  sortComparer: (a: ICatDTO, b: ICatDTO) => (a.id < b.id ? -1 : 1),
+  sortComparer: (a: ICat2, b: ICat2) => (a.id < b.id ? -1 : 1),
 });
 
 const catsFavAdapter = createEntityAdapter({
   // Сортируем массив с идентификаторами по заголовкам книг
   // Указывая тип параметров, ts опредедяет тип сущности в стате
   // sortComparer: (a: ICat, b: ICat) => a.id.localeCompare(b.id), // !!! последующее изменение ф-ии сравнения не применяется
-  sortComparer: (a: ICatDTO, b: ICatDTO) => (a.id < b.id ? -1 : 1),
+  sortComparer: (a: ICat2, b: ICat2) => (a.id < b.id ? -1 : 1),
 });
 
 export const catsFavSlice = createSlice({
@@ -46,7 +47,7 @@ export const catsFavSlice = createSlice({
     // error: '',
   }),
   reducers: {
-    catAdded: catsFavAdapter.addOne,
+    catAdd: catsFavAdapter.addOne,
 
     catRemoveOne: catsFavAdapter.removeOne,
 
@@ -62,28 +63,16 @@ export const catsFavSlice = createSlice({
     //     state.loading = "idle";
     //   }
     // },
-    catUpdated: catsFavAdapter.updateOne,
+    // catUpdated: catsFavAdapter.updateOne,
   },
+});
 
-  // extraReducers: {
-  //   [fetchCats.fulfilled.type]: (state, action) => {
-  //     // : PayloadAction<string>
-  //     // console.log("fetchCats.fulfilled.type: ", action.payload);
-
-  //     // if (state.loading === "pending") {
-  //     catsAdapter.setAll(state, action.payload);
-  //     state.isLoading = false;
-  //     // }
-  //     // state.cats = action.payload;
-  //   },
-  //   [fetchCats.pending.type]: (state) => {
-  //     state.isLoading = true;
-  //   },
-  //   [fetchCats.rejected.type]: (state, action: PayloadAction<string>) => {
-  //     state.isLoading = false;
-  //     state.error = action.payload;
-  //   },
-  // },
+export const fetchCats = createAsyncThunk('cats/fetchCats', async (params: any) => {
+  // , thunkAPI
+  // const response = await userAPI.fetchById(userId);
+  // const { data: catsFetched = [], error, isLoading, isFetching } = catsAPI.useFetchCatsQuery({ limit, page });
+  const response = await catsAPI.useFetchCatsQuery({ limit: params.limit, page: params.page });
+  return response.data;
 });
 
 export const catsSlice = createSlice({
@@ -97,18 +86,39 @@ export const catsSlice = createSlice({
   }),
   reducers: {
     catAddMany: catsAdapter.addMany,
-
+    catAdd: catsAdapter.addOne,
     // setCurrPage(state, action) {
     //   state.currPage = action.payload;
     // },
-    // catUpdated: catsFavAdapter.updateOne,
+    catUpdate: catsFavAdapter.updateOne,
+    catRemoveOne: catsFavAdapter.removeOne,
   },
+  // extraReducers: {
+  //   [fetchCats.fulfilled.type]: (state, action) => {
+  //     // : PayloadAction<string>
+  //     // console.log("fetchCats.fulfilled.type: ", action.payload);
+
+  //     // if (state.loading === "pending") {
+  //     catsAdapter.addMany(state, action.payload);
+  //     // catsAdapter.setAll(state, action.payload);
+  //     state.isLoading = false;
+  //     // }
+  //     // state.cats = action.payload;
+  //   },
+  //   [fetchCats.pending.type]: (state) => {
+  //     state.isLoading = true;
+  //   },
+  //   // [fetchCats.rejected.type]: (state, action: PayloadAction<string>) => {
+  //   //   state.isLoading = false;
+  //   //   state.error = action.payload;
+  //   // },
+  // },
 });
 
 // catsReceived,catsLoading,
 
-export const { catAdded, catUpdated, catRemoveOne } = catsFavSlice.actions;
-export const { catAddMany } = catsSlice.actions;
+export const { catAdd: catFavAdd, catRemoveOne: catFavRemoveOne } = catsFavSlice.actions;
+export const { catAddMany, catUpdate, catRemoveOne, catAdd } = catsSlice.actions;
 export const catsFavSelectors = catsFavAdapter.getSelectors(
   // (state: RootState) => state.cats
   (state: RootState) => state.catsFav
