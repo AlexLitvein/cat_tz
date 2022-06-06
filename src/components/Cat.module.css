@@ -28,6 +28,7 @@
 .catImg {
     width: var(--img-sz);
     height: var(--img-sz);
+    transition: all 0.1s ease-out;
   }
 
   .catCard:hover .catImg  {

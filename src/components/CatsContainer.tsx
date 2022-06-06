@@ -86,7 +86,7 @@ export const CatsContainer = () => {
       <div className={catStyle.сardCont}>{renderList()}</div>
       {(isFetching || error) && (
         <div className={catStyle.catLoadCont}>
-          {isFetching && <h1>... загружаем еще котиков ...</h1>}
+          {isFetching && <h1 style={{ height: '100px' }}>... загружаем еще котиков ...</h1>}
           {error && <h1>{'Не удалось загрузить котиков :('}</h1>}
         </div>
       )}

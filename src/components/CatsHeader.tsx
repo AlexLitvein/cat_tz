@@ -8,7 +8,7 @@ const CatsHeader = () => {
   const linkActive = ({ isActive }: { isActive: boolean }): string | undefined =>
     isActive ? catsHeaderStyle.buttActive + ' ' + catsHeaderStyle.butt : catsHeaderStyle.butt;
   return (
-    <BrowserRouter>
+    <BrowserRouter basename='/catszone'>
       <nav className={catsHeaderStyle.catsHeader}>
         <NavLink to='/' className={linkActive}>
           Все котики
